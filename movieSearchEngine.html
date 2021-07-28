@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tell Me About Movie</title>
+    <style>
+        body {
+            background-color: black;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #title {
+            color: red;
+            font-size: 30px;
+            margin-left: 60px;
+            font-weight: 700;
+        }
+
+        #head {
+            margin-left: 35%;
+        }
+
+        #display {
+            width: 80%;
+            height: 450px;
+            margin: auto;
+            display: flex;
+        }
+
+        #movie {
+            border: 2px solid red;
+            height: 25px;
+            width: 400px;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        #errorImg {
+            width: 100%;
+            height: 80%;
+            margin-left: 10%;
+            margin-top: 30px;
+        }
+
+        #button {
+            background-color: red;
+            border: 1px solid red;
+            height: 25px;
+            width: 100px;
+            border-radius: 3px;
+            color: white;
+            margin-left: 150px;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        #name {
+            color: red;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            margin-top: 0px;
+        }
+
+        #name>a {
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        #leftCont {
+            width: 30%;
+            float: left;
+        }
+
+        #rightCont {
+            width: 70%;
+            justify-content: space-evenly;
+            margin-left: 3%;
+            padding-top: 20px;
+        }
+
+
+        .normal {
+            width: 100%;
+            color: white;
+        }
+
+        .normal>a {
+            color: red;
+            font-weight: 400;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="head">
+        <p id="title">Tell Me About Movie</p>
+        <input type="text" placeholder="Search Here" id="movie"><br />
+        <button onclick="searchMovie()" id="button">Search</button>
+    </div>
+    <div id="display"></div>
+</body>
+
+</html>
+
+<script>
+
+    async function searchMovie() {
+        let name = document.getElementById('movie').value;
+        name = name.replace(/^\s+|\s+$/g, "").toLowerCase();
+        try {
+            const res = await fetch(`http://www.omdbapi.com/?t=${name}&plot=full&apikey=659e29ea`);
+            const details = await res.json();
+            console.log(details);
+            displayDetails(details);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    function displayDetails(data) {
+        let frame = document.getElementById('display');
+        frame.innerHTML = null;
+        if (data.Response == "False") {
+            let errorImg = document.createElement('img');
+            errorImg.setAttribute('id', 'errorImg');
+            errorImg.src = 'https://media0.giphy.com/media/lPROJr9lbBk7iKovfh/200.gif?cid=ecf05e4798n79rqqqojnxfx56bzffvsk2yvuaiuuf33m487v&rid=200.gif&ct=g';
+            frame.append(errorImg);
+        }
+        else if (data.Response == "True") {
+            let leftCont = document.createElement('div');
+            leftCont.setAttribute('id', 'leftCont');
+            let rightCont = document.createElement('div');
+            rightCont.setAttribute('id', 'rightCont');
+            frame.append(leftCont, rightCont);
+
+            let name = document.createElement('p');
+            name.setAttribute('id', 'name');
+            let rec;
+            if (Number(data.imdbRating) > 8.5) {
+                rec = "Recommended";
+            }
+            else {
+                rec = "";
+            }
+            name.innerHTML = `${data.Title}  <a>${rec}</a>`;
+
+            let movieImg = document.createElement('img');
+            movieImg.setAttribute('id', 'movieImg');
+            movieImg.src = data.Poster;
+
+            leftCont.append(name, movieImg);
+
+            let plot = document.createElement('p');
+            plot.setAttribute('class', 'normal');
+            plot.innerHTML = `<a>Plot: </a>${data.Plot}`;
+
+            let IMDB = document.createElement('p');
+            IMDB.setAttribute('class', 'normal');
+            IMDB.innerHTML = `<a>IMDB: </a>${data.imdbRating}`;
+
+            let release = document.createElement('p');
+            release.setAttribute('class', 'normal');
+            release.innerHTML = `<a>Release: </a>${data.Released}`;
+
+            let genre = document.createElement('p');
+            genre.setAttribute('class', 'normal');
+            genre.innerHTML = `<a>Genre: </a>${data.Genre}`;
+
+            let rated = document.createElement('p');
+            rated.setAttribute('class', 'normal');
+            rated.innerHTML = `<a>Rated: </a>${data.Rated}`;
+
+            let actor = document.createElement('p');
+            actor.setAttribute('class', 'normal');
+            actor.innerHTML = `<a>Actor: </a>${data.Actors}`;
+
+            let director = document.createElement('p');
+            director.setAttribute('class', 'normal');
+            director.innerHTML = `<a>Director: </a>${data.Director}`;
+
+            let language = document.createElement('p');
+            language.setAttribute('class', 'normal');
+            language.innerHTML = `<a>Language: </a>${data.Language}`;
+
+            let runTime = document.createElement('p');
+            runTime.setAttribute('class', 'normal');
+            runTime.innerHTML = `<a>Runtime: </a>${data.Runtime}`;
+
+            let writer = document.createElement('p');
+            writer.setAttribute('class', 'normal');
+            writer.innerHTML = `<a>Writer: </a>${data.Writer}`;
+
+            rightCont.append(plot, IMDB, release, genre, rated, actor, director, language, runTime, writer);
+
+        }
+    }
+</script>
